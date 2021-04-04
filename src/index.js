@@ -4,6 +4,8 @@ import logoImg from './assets/logo.png';
 import { BootScene } from './scenes/boot';
 import { MainMenuScene } from './scenes/main-menu';
 import { DungeonMapScene } from './scenes/dungeon-map';
+import constants from './constants';
+import { HUDScene } from './scenes/hud';
 
 class MyGame extends Phaser.Scene
 {
@@ -26,7 +28,7 @@ class MyGame extends Phaser.Scene
 }
 
 const game = new Phaser.Game({
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     parent: 'phaser-example',
     physics: {
         default: 'arcade',
@@ -41,9 +43,9 @@ const game = new Phaser.Game({
     scale: {
         mode: Phaser.Scale.ScaleModes.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 480,
-        height: 320,
-        zoom: 2,
+        width: constants.ROOM_W + constants.SIDEBAR_W,
+        height: constants.ROOM_H,
+        zoom: 3,
     },
-    scene: [ BootScene, MainMenuScene, DungeonMapScene ],
+    scene: [ BootScene, MainMenuScene, DungeonMapScene, HUDScene ],
 });

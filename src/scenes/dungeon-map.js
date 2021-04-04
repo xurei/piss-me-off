@@ -4,6 +4,8 @@ import Phaser from "phaser";
 import tilesMap from  '../assets/images/tiles.png';
 import playerImage from  '../assets/images/player.png';
 import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
+import constants from '../constants';
+import { DungeonRoom } from '../dungeon-room';
 
 export class DungeonMapScene extends Phaser.Scene {
     constructor () {
@@ -25,21 +27,25 @@ export class DungeonMapScene extends Phaser.Scene {
     }
     
     create() {
+        
         //this.add.image(50, 50, 'tiles', 0);
         //this.add.image(70, 70, 'tiles', 10*44 + 1);
     
-        const map = this.make.tilemap({ key: 'level1' });
-        // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
-        // Phaser's cache (i.e. the name you used in preload)
-        const tileset = map.addTilesetImage('dungeon_tiles_0_retouche', 'dungeonTiles');
+        const currentRoom = new DungeonRoom(this, 0, 0);
+        const leftRoom    = new DungeonRoom(this, -1, 0);
+        const rightRoom   = new DungeonRoom(this, +1, 0);
+        const topRoom     = new DungeonRoom(this, 0, -1);
+        const downRoom    = new DungeonRoom(this, 0, +1);
     
-        // Parameters: layer name (or index) from Tiled, tileset, x, y
-        const backgroundTiles = map.createLayer("background", tileset, 0, 0);
-        const borderTiles = map.createLayer("Border", tileset, 0, 0);
-        //borderTiles.setCollisionByProperty({ collides: true });
-        borderTiles.setCollision([ 280, 348, 279 ]);
+        this.player = this.physics.add.sprite(200, 200, 'player');
+        this.player.setDepth(constants.Z_PLAYER);
         
-        
+        currentRoom.load();
+        rightRoom.load();
+        leftRoom.load();
+        topRoom.load();
+        downRoom.load();
+    
         /*const debugGraphics = this.add.graphics().setAlpha(0.75);
         borderTiles.renderDebug(debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
@@ -47,17 +53,7 @@ export class DungeonMapScene extends Phaser.Scene {
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });*/
         
-        
-        const lights = map.createLayer("lights", tileset, 0, 0); // FIXME animated tiles are not working
-        //console.log(animatedTiles);
-        this.sys.animatedTiles.init(map);
-        //const aboveLayer = map.createLayer("Above Player", tileset, 0, 0);
-        
-        this.player = this.physics.add.sprite(200, 200, 'player');
         console.log('create2');
-    
-        this.physics.add.collider(this.player, borderTiles);
-    
     
         //move player with cursor keys
         //this.cursors = this.input.keyboard.createCursorKeys();
@@ -71,17 +67,15 @@ export class DungeonMapScene extends Phaser.Scene {
             this.pad = pad;
             console.log('Pad detected !');
         });
-    
-        this.debugPadText = this.add.text(10, 30, '', { font: '10px Courier', fill: '#ffffff' });
-        this.debugPadText.setText('waiting for gamepad');
     }
     
     update(time, delta) {
         if (!this.pad) {
             return;
         }
-        const playerVelocity = 580;
+        const playerVelocity = 150;
         let nbDown = 0;
+    
     
         const padUp    = this.pad.axes[1].getValue() < -0.5;
         const padDown  = this.pad.axes[1].getValue() > 0.5;
@@ -122,71 +116,5 @@ export class DungeonMapScene extends Phaser.Scene {
         else {
             this.player.body.setVelocityX(0);
         }
-        
-        this.debugPad();
-    }
-    
-    debugPad() {
-        let debug = [];
-        let pads = this.input.gamepad.gamepads;
-        // let pads = this.input.gamepad.getAll();
-        // let pads = navigator.getGamepads();
-    
-        for (let i = 0; i < pads.length; i++)
-        {
-            let pad = pads[i];
-        
-            if (!pad)
-            {
-                continue;
-            }
-        
-            //  Timestamp, index. ID
-            debug.push(pad.id);
-            debug.push('Index: ' + pad.index + ' Timestamp: ' + pad.timestamp);
-        
-            //  Buttons
-        
-            let buttons = '';
-        
-            for (let b = 0; b < pad.buttons.length; b++)
-            {
-                let button = pad.buttons[b];
-            
-                buttons = buttons.concat('B' + button.index + ': ' + button.value + '  ');
-                // buttons = buttons.concat('B' + b + ': ' + button.value + '  ');
-            
-                if (b === 8)
-                {
-                    debug.push(buttons);
-                    buttons = '';
-                }
-            }
-        
-            debug.push(buttons);
-        
-            //  Axis
-        
-            let axes = '';
-        
-            for (let a = 0; a < pad.axes.length; a++)
-            {
-                let axis = pad.axes[a];
-            
-                axes = axes.concat('A' + axis.index + ': ' + Math.round(axis.getValue()*100)/100 + '  ');
-                // axes = axes.concat('A' + a + ': ' + axis + '  ');
-            
-                if (a === 1)
-                {
-                    debug.push(axes);
-                    axes = '';
-                }
-            }
-        
-            debug.push(axes);
-            debug.push('');
-        }
-    
-        this.debugPadText.setText(debug);
     }
 }

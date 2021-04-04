@@ -15,7 +15,7 @@ export class BootScene extends Phaser.Scene {
         this.load.on('progress', (value) => {
             console.log(value);
             if (value === 1) {
-                this.scene.start('DungeonMap');
+                this.scene.launch('DungeonMap').launch('HUD').stop();
             }
         });
     
