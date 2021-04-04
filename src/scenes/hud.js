@@ -7,6 +7,19 @@ import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 import constants from '../constants';
 import { DungeonRoom } from '../dungeon-room';
 
+let px = 0, py = 0;
+let rx = 0, ry = 0;
+
+export function setPlayerRoomPos(x, y) {
+    px = Math.round(x*100)/100;
+    py = Math.round(y*100)/100;
+}
+
+export function setRoomPos(x, y) {
+    rx = x;
+    ry = y;
+}
+
 export class HUDScene extends Phaser.Scene {
     constructor () {
         super('HUD');
@@ -19,7 +32,7 @@ export class HUDScene extends Phaser.Scene {
     create() {
         const sidebar_placeholder = this.add.rectangle(
             constants.ROOM_W + constants.SIDEBAR_W/2, constants.ROOM_H/2,
-            constants.SIDEBAR_W, constants.ROOM_H, 0xff0000);
+            constants.SIDEBAR_W, constants.ROOM_H, 0x111111);
     
         this.debugPadText = this.add.text(10, 30, '', { font: '10px Courier', fill: '#ffffff' });
         this.debugPadText.setText('waiting for gamepad');
@@ -90,6 +103,8 @@ export class HUDScene extends Phaser.Scene {
         
             debug.push(axes);
             debug.push('');
+            debug.push('PX: ' + px + '; PY: ' + py);
+            debug.push('RX: ' + rx + '; RY: ' + ry);
             debug.push('FPS:' + fps);
         }
     

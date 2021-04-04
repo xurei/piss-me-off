@@ -10,6 +10,9 @@ import { DungeonRoom } from '../dungeon-room';
 export class DungeonMapScene extends Phaser.Scene {
     constructor () {
         super('DungeonMap');
+        this.rooms = [];
+        this.currentRoomX = 0;
+        this.currentRoomY = 0;
     }
     
     preload() {
@@ -18,34 +21,20 @@ export class DungeonMapScene extends Phaser.Scene {
     
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
     
-        /*this.load.scenePlugin({
-            key: 'AnimatedTilesPlugin',
-            url: animatedTiles.register,
-            //systemKey : 'animatedTiles',
-            //sceneKey: 'banner'
-        });*/
+        this.cameras.main.setViewport(0, 0, constants.ROOM_W, constants.ROOM_H);
     }
     
     create() {
-        
-        //this.add.image(50, 50, 'tiles', 0);
-        //this.add.image(70, 70, 'tiles', 10*44 + 1);
-    
-        const currentRoom = new DungeonRoom(this, 0, 0);
-        const leftRoom    = new DungeonRoom(this, -1, 0);
-        const rightRoom   = new DungeonRoom(this, +1, 0);
-        const topRoom     = new DungeonRoom(this, 0, -1);
-        const downRoom    = new DungeonRoom(this, 0, +1);
-    
         this.player = this.physics.add.sprite(200, 200, 'player');
         this.player.setDepth(constants.Z_PLAYER);
         
-        currentRoom.load();
-        rightRoom.load();
-        leftRoom.load();
-        topRoom.load();
-        downRoom.load();
-    
+        this.addRoom(0, 0, 'level1');
+        this.addRoom(1, 0, 'level1');
+        this.addRoom(2, 0, 'level1');
+        this.addRoom(0, 1, 'level1');
+        this.addRoom(0, 2, 'level1');
+        this.addRoom(1, 1, 'level1');
+        
         /*const debugGraphics = this.add.graphics().setAlpha(0.75);
         borderTiles.renderDebug(debugGraphics, {
             tileColor: null, // Color of non-colliding tiles
@@ -69,6 +58,32 @@ export class DungeonMapScene extends Phaser.Scene {
         });
     }
     
+    addRoom(x, y, roomName) {
+        if (!this.rooms[x]) {
+            this.rooms[x] = [];
+        }
+        this.rooms[x][y] = new DungeonRoom(this, x, y, roomName);
+        this.rooms[x][y].load();
+        
+        console.log(this.rooms);
+    }
+    
+    changeRoom(x, y) {
+        if (x !== this.currentRoomX || y !== this.currentRoomY) {
+            this.tweens.add({
+                targets: this.cameras.main,
+                zoom : 1,
+                scrollX: this.cameras.main.scrollX + constants.ROOM_W * (x - this.currentRoomX),
+                scrollY: this.cameras.main.scrollY + constants.ROOM_H * (y - this.currentRoomY),
+                duration: 250,
+                ease: 'Linear',
+            });
+            this.currentRoomX = x;
+            this.currentRoomY = y;
+            console.log('Tween add');
+        }
+    }
+    
     update(time, delta) {
         if (!this.pad) {
             return;
@@ -76,45 +91,18 @@ export class DungeonMapScene extends Phaser.Scene {
         const playerVelocity = 150;
         let nbDown = 0;
     
-    
-        const padUp    = this.pad.axes[1].getValue() < -0.5;
-        const padDown  = this.pad.axes[1].getValue() > 0.5;
-        const padLeft  = this.pad.axes[0].getValue() < -0.5;
-        const padRight = this.pad.axes[0].getValue() > 0.5;
-        
-        if (padUp) {
-            ++nbDown;
+        let deltaX = this.pad.axes[0].getValue();
+        let deltaY = this.pad.axes[1].getValue();
+        if (Math.abs(deltaX) < 0.2) {
+            deltaX = 0;
         }
-        if (padDown) {
-            ++nbDown;
-        }
-        if (padLeft) {
-            ++nbDown;
-        }
-        if (padRight) {
-            ++nbDown;
-        }
-        nbDown = Math.min(2, nbDown);
-        const norm = Math.sqrt(nbDown); // TODO remove the sqrt()
-        
-        if (padUp) {
-            this.player.body.setVelocityY(-playerVelocity / norm);
-        }
-        else if (padDown) {
-            this.player.body.setVelocityY(+playerVelocity / norm);
-        }
-        else {
-            this.player.body.setVelocityY(0);
+        if (Math.abs(deltaY) < 0.2) {
+            deltaY = 0;
         }
         
-        if (padLeft) {
-            this.player.body.setVelocityX(-playerVelocity / norm);
-        }
-        else if (padRight) {
-            this.player.body.setVelocityX(+playerVelocity / norm);
-        }
-        else {
-            this.player.body.setVelocityX(0);
-        }
+        this.player.body.setVelocityX(playerVelocity * deltaX);
+        this.player.body.setVelocityY(playerVelocity * deltaY);
+        
+        this.rooms[this.currentRoomX][this.currentRoomY].update(time, delta);
     }
 }
