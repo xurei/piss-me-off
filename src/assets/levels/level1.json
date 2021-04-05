@@ -67,7 +67,7 @@
                  "name":"Tile Layer 5",
                  "opacity":1,
                  "type":"tilelayer",
-                 "visible":true,
+                 "visible":false,
                  "width":29,
                  "x":0,
                  "y":0
@@ -75,7 +75,7 @@
          "name":"test1",
          "opacity":1,
          "type":"group",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 

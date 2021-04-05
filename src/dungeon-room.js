@@ -33,6 +33,7 @@ export class DungeonRoom {
         borderTiles.setCollision([ 280, 348, 279 ]);
     
         this.game.physics.add.collider(this.game.player, borderTiles);
+        this.game.physics.add.collider(this.game.mob, borderTiles);
     }
     
     update(time, delta) {

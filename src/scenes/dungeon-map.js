@@ -3,9 +3,12 @@
 import Phaser from "phaser";
 import tilesMap from  '../assets/images/tiles.png';
 import playerImage from  '../assets/images/player.png';
+import pascalImage from  '../assets/images/mob.png';
 import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 import constants from '../constants';
 import { DungeonRoom } from '../dungeon-room';
+import { Player } from '../entities/player';
+import { Pascal } from '../entities/pascal';
 
 export class DungeonMapScene extends Phaser.Scene {
     constructor () {
@@ -18,6 +21,7 @@ export class DungeonMapScene extends Phaser.Scene {
     preload() {
         //assets we'll use in the loading screen
         this.load.image('player', playerImage);
+        this.load.image('pascal', pascalImage);
     
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
     
@@ -25,8 +29,13 @@ export class DungeonMapScene extends Phaser.Scene {
     }
     
     create() {
-        this.player = this.physics.add.sprite(200, 200, 'player');
-        this.player.setDepth(constants.Z_PLAYER);
+        this.player = new Player(this, 200, 200);
+        this.mob = new Pascal(this, 100, 100);
+        this.physics.add.overlap(this.player.gameObject, this.mob.gameObject,
+            (player, mob) => {
+                console.log("COLLIDES");
+            }
+        );
         
         this.addRoom(0, 0, 'level1');
         this.addRoom(1, 0, 'level1');
@@ -42,16 +51,7 @@ export class DungeonMapScene extends Phaser.Scene {
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });*/
         
-        console.log('create2');
-    
-        //move player with cursor keys
-        //this.cursors = this.input.keyboard.createCursorKeys();
-        
-        console.log(this.input);
-        
-        //move player with gamepad
-        // TODO check presence of gamepad (see https://github.com/photonstorm/phaser3-examples/blob/master/public/src/input/gamepad/gamepad%20across%20scenes.js)
-        //this.pad = this.input.gamepad.pad1;
+        //Gamepad detection
         this.input.gamepad.once('connected', pad => {
             this.pad = pad;
             console.log('Pad detected !');
@@ -64,8 +64,6 @@ export class DungeonMapScene extends Phaser.Scene {
         }
         this.rooms[x][y] = new DungeonRoom(this, x, y, roomName);
         this.rooms[x][y].load();
-        
-        console.log(this.rooms);
     }
     
     changeRoom(x, y) {
@@ -85,24 +83,8 @@ export class DungeonMapScene extends Phaser.Scene {
     }
     
     update(time, delta) {
-        if (!this.pad) {
-            return;
-        }
-        const playerVelocity = 150;
-        let nbDown = 0;
-    
-        let deltaX = this.pad.axes[0].getValue();
-        let deltaY = this.pad.axes[1].getValue();
-        if (Math.abs(deltaX) < 0.2) {
-            deltaX = 0;
-        }
-        if (Math.abs(deltaY) < 0.2) {
-            deltaY = 0;
-        }
-        
-        this.player.body.setVelocityX(playerVelocity * deltaX);
-        this.player.body.setVelocityY(playerVelocity * deltaY);
-        
+        this.player.update(time, delta);
+        this.mob.update(time, delta);
         this.rooms[this.currentRoomX][this.currentRoomY].update(time, delta);
     }
 }
