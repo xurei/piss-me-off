@@ -5,7 +5,7 @@ const PLAYER_X = 4.5;
 const PLAYER_Y = 8;
 const SWORD_X = 1;
 const SWORD_Y = 1;
-const SWORD_W = 12;
+const SWORD_W = 20;
 const SWORD_H = 3;
 
 export class Player extends Entity {
@@ -16,7 +16,8 @@ export class Player extends Entity {
         this.y = y;
         
         this.swordVisible = false;
-        this.swordVisibleFrameCount = 0;
+        this.swordAngle = 0;
+        this.lastVelocityAngle = 0;
     
         this.playerObject = this.game.add.sprite(PLAYER_X, PLAYER_Y, 'player');
         
@@ -61,19 +62,25 @@ export class Player extends Entity {
             this.gameObject.body.setVelocityX(constants.PLAYER_VELOCITY * deltaX);
             this.gameObject.body.setVelocityY(constants.PLAYER_VELOCITY * deltaY);
     
+            if (deltaX !== 0 || deltaY !== 0) {
+                this.lastVelocityAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+            }
+            
             let xPressed = this.game.pad.buttons[2].pressed;
             
             if (!this.swordVisible && xPressed) {
                 // Just pressed X
-                this.swordVisibleFrameCount = 0;
+                this.swordAngle = -90;
+                this.swordTargetAngle = this.lastVelocityAngle;
+            }
+            else if (xPressed) {
+                this.swordAngle += 10;
+                this.swordAngle = Math.min(0, this.swordAngle);
             }
             this.swordVisible = xPressed;
-            
-            if (this.swordVisible) {
-                this.swordVisibleFrameCount++;
-            }
     
-            this.swordObject.setAngle(this.swordVisibleFrameCount);
+            this.swordObject.setAngle(this.swordTargetAngle + this.swordAngle);
+            
             //this.swordObject.setAngle(0);
             
             /*//console.log(this.game.pad.buttons[2]);

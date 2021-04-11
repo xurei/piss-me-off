@@ -13,6 +13,6 @@ export default {
     Z_BORDERS: 5,
     Z_BACKGROUND: 0,
     
-    PLAYER_VELOCITY: 150,
+    PLAYER_VELOCITY: 120,
     MOB_VELOCITY: 100,
 }
