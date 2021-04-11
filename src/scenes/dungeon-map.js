@@ -78,7 +78,6 @@ export class DungeonMapScene extends Phaser.Scene {
             });
             this.currentRoomX = x;
             this.currentRoomY = y;
-            console.log('Tween add');
         }
     }
     

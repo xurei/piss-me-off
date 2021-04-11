@@ -12,6 +12,8 @@ export class Player extends Entity {
     }
     
     update(time, delta) {
+        this.x = this.gameObject.x;
+        this.y = this.gameObject.y;
         if (!!this.game.pad) {
             let deltaX = this.game.pad.axes[0].getValue();
             let deltaY = this.game.pad.axes[1].getValue();
