@@ -5,7 +5,7 @@ import { BootScene } from './scenes/boot';
 import { MainMenuScene } from './scenes/main-menu';
 import { DungeonMapScene } from './scenes/dungeon-map';
 import constants from './constants';
-import { HUDScene } from './scenes/hud';
+import { GameOverScene, HUDScene } from './scenes/hud';
 
 const game = new Phaser.Game({
     type: Phaser.WEBGL,
@@ -27,5 +27,5 @@ const game = new Phaser.Game({
         height: constants.ROOM_H,
         zoom: 3,
     },
-    scene: [ BootScene, MainMenuScene, DungeonMapScene, HUDScene ],
+    scene: [ BootScene, MainMenuScene, DungeonMapScene, HUDScene, GameOverScene ],
 });

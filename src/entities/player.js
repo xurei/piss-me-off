@@ -1,6 +1,7 @@
 import { Entity } from './entity';
 import constants from '../constants';
 import { inputsEventsCenter } from '../scenes/dungeon-map';
+import { setLife } from '../scenes/hud';
 
 const PLAYER_X = 4.5;
 const PLAYER_Y = 8;
@@ -15,6 +16,8 @@ export class Player extends Entity {
         this.game = game;
         this.x = x;
         this.y = y;
+        this.pv = 6;
+        this.invincibilityFrames = 0;
         
         this.swordTriggered = false;
         this.swordVisible = false;
@@ -52,12 +55,17 @@ export class Player extends Entity {
     }
     
     update(time, delta, inputData) {
+        setLife(this.pv, this.invincibilityFrames);
+        
         this.x = this.gameObject.x + this.playerObject.width / 2;
         this.y = this.gameObject.y + this.playerObject.height / 2;
         
         const deltaX = inputData.deltaX || 0;
         const deltaY = inputData.deltaY || 0;
         const actionPressed = inputData.actionPressed;
+        if (this.invincibilityFrames > 0) {
+            this.invincibilityFrames--;
+        }
 
         this.gameObject.body.setVelocityX(constants.PLAYER_VELOCITY * deltaX);
         this.gameObject.body.setVelocityY(constants.PLAYER_VELOCITY * deltaY);

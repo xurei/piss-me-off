@@ -4,6 +4,8 @@ import { inputsEventsCenter } from './dungeon-map';
 
 let px = 0, py = 0;
 let rx = 0, ry = 0;
+let pv = 0;
+let invincibilityFrames = 0;
 
 export function setPlayerRoomPos(x, y) {
     px = Math.round(x*100)/100;
@@ -15,7 +17,12 @@ export function setRoomPos(x, y) {
     ry = y;
 }
 
-export class HUDScene extends Phaser.Scene {
+export function setLife(_pv, _invincibilityFrames) {
+    pv = _pv;
+    invincibilityFrames = _invincibilityFrames;
+}
+
+export class GameOverScene extends Phaser.Scene {
     constructor () {
         super('HUD');
     }
@@ -106,6 +113,7 @@ export class HUDScene extends Phaser.Scene {
             debug.push('PX: ' + px + '; PY: ' + py);
             debug.push('RX: ' + rx + '; RY: ' + ry);
             debug.push('FPS:' + fps);
+            debug.push('PV:' + pv + '; INV_F:' + invincibilityFrames);
         }
     
         this.debugPadText.setText(debug);

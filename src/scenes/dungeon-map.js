@@ -21,6 +21,7 @@ export class DungeonMapScene extends Phaser.Scene {
         this.currentRoomY = 0;
         this.inputData = {};
         this.lastInputData = {};
+        this.gameRunning = true;
     }
     
     preload() {
@@ -39,6 +40,13 @@ export class DungeonMapScene extends Phaser.Scene {
         this.physics.add.overlap(this.player.gameObject, this.mob.gameObject,
             (player, mob) => {
                 console.log("COLLIDES");
+                if (this.player.invincibilityFrames === 0) {
+                    this.player.pv -= 1;
+                    this.player.invincibilityFrames = 60;
+                    if (this.player.pv <= 0) {
+                        this.gameRunning = false;
+                    }
+                }
             }
         );
         
@@ -55,6 +63,10 @@ export class DungeonMapScene extends Phaser.Scene {
             collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });*/
+    
+        this.gameOverText = this.add.text(10, 30, 'GAME OVER', { font: '26px Courier', fill: '#ffffff' });
+        this.gameOverText.setDepth(constants.Z_HUD_DEBUG);
+        this.gameOverText.setVisible(false);
         
         //Gamepad detection
         this.input.gamepad.once('connected', pad => {
@@ -91,6 +103,7 @@ export class DungeonMapScene extends Phaser.Scene {
         this.player.update(time, delta, this.inputData);
         this.mob.update(time, delta);
         this.rooms[this.currentRoomX][this.currentRoomY].update(time, delta);
+        this.gameOverText.setVisible(!this.gameRunning);
     }
     
     updateInputs() {
