@@ -64,7 +64,7 @@ export class DungeonMapScene extends Phaser.Scene {
             faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         });*/
     
-        this.gameOverText = this.add.text(10, 30, 'GAME OVER', { font: '26px Courier', fill: '#ffffff' });
+        this.gameOverText = this.add.text(constants.ROOM_W/2 - 70, constants.ROOM_H/2 - 20, 'GAME OVER', { font: '26px Courier', fill: '#ffffff' });
         this.gameOverText.setDepth(constants.Z_HUD_DEBUG);
         this.gameOverText.setVisible(false);
         
