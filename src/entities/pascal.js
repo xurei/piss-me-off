@@ -7,6 +7,7 @@ export class Pascal extends Entity {
         this.game = game;
         this.x = x;
         this.y = y;
+        this.pv = 3;
         this.gameObject = this.game.physics.add.sprite(this.x, this.y, 'pascal');
         this.gameObject.setDepth(constants.Z_PLAYER);
         this.gameObject.body.setVelocityX(constants.MOB_VELOCITY);
