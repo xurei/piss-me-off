@@ -7,26 +7,6 @@ import { DungeonMapScene } from './scenes/dungeon-map';
 import constants from './constants';
 import { HUDScene } from './scenes/hud';
 
-class MyGame extends Phaser.Scene
-{
-    preload () {
-        this.load.image('logo', logoImg);
-    }
-    
-    create () {
-        const logo = this.add.image(400, 150, 'logo');
-      
-        this.tweens.add({
-            targets: logo,
-            y: 450,
-            duration: 2000,
-            ease: "Power2",
-            yoyo: true,
-            loop: -1
-        });
-    }
-}
-
 const game = new Phaser.Game({
     type: Phaser.WEBGL,
     parent: 'phaser-example',
@@ -34,7 +14,7 @@ const game = new Phaser.Game({
         default: 'arcade',
         arcade: {
             //gravity: { y: 300 },
-            debug: true,
+            debug: false,
         }
     },
     input: {

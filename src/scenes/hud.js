@@ -1,11 +1,6 @@
 //setting game configuration and loading the assets for the loading screen
-
-import Phaser from "phaser";
-import tilesMap from  '../assets/images/tiles.png';
-import playerImage from  '../assets/images/player.png';
-import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 import constants from '../constants';
-import { DungeonRoom } from '../dungeon-room';
+import { inputsEventsCenter } from './dungeon-map';
 
 let px = 0, py = 0;
 let rx = 0, ry = 0;
@@ -37,6 +32,11 @@ export class HUDScene extends Phaser.Scene {
         this.debugPadText = this.add.text(10, 30, '', { font: '10px Courier', fill: '#ffffff' });
         this.debugPadText.setText('waiting for gamepad');
         this.debugPadText.setDepth(constants.Z_HUD_DEBUG);
+    
+        inputsEventsCenter.on('debugPressed', () => {
+            this.isDebugVisible = !this.isDebugVisible;
+            this.debugPadText.setVisible(this.isDebugVisible);
+        });
     }
     
     update(time, delta) {

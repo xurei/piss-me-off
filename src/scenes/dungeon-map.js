@@ -10,12 +10,17 @@ import { DungeonRoom } from '../dungeon-room';
 import { Player } from '../entities/player';
 import { Pascal } from '../entities/pascal';
 
+//TODO move to index ?
+export const inputsEventsCenter = new Phaser.Events.EventEmitter();
+
 export class DungeonMapScene extends Phaser.Scene {
     constructor () {
         super('DungeonMap');
         this.rooms = [];
         this.currentRoomX = 0;
         this.currentRoomY = 0;
+        this.inputData = {};
+        this.lastInputData = {};
     }
     
     preload() {
@@ -82,8 +87,40 @@ export class DungeonMapScene extends Phaser.Scene {
     }
     
     update(time, delta) {
-        this.player.update(time, delta);
+        this.updateInputs();
+        this.player.update(time, delta, this.inputData);
         this.mob.update(time, delta);
         this.rooms[this.currentRoomX][this.currentRoomY].update(time, delta);
+    }
+    
+    updateInputs() {
+        this.lastInputData = this.inputData;
+        if (!!this.pad) {
+            // Joystick axes
+            let deltaX = this.pad.axes[0].getValue();
+            let deltaY = this.pad.axes[1].getValue();
+            if (Math.abs(deltaX) < 0.2) {
+                deltaX = 0;
+            }
+            if (Math.abs(deltaY) < 0.2) {
+                deltaY = 0;
+            }
+            
+            // TODO control mapping
+            const debugDown = this.pad.buttons[8].pressed;
+            const actionDown = this.pad.buttons[2].pressed;
+            this.inputData = {
+                deltaX, deltaY,
+                actionDown,
+                debugDown,
+            };
+            if (!this.lastInputData.debugDown && debugDown) {
+                inputsEventsCenter.emit('debugPressed');
+            }
+            if (!this.lastInputData.actionDown && actionDown) {
+                console.log('actionPressed');
+                inputsEventsCenter.emit('actionPressed');
+            }
+        }
     }
 }
