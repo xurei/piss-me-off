@@ -22,92 +22,98 @@ export function setLife(_pv, _invincibilityFrames) {
     invincibilityFrames = _invincibilityFrames;
 }
 
-export class GameOverScene extends Phaser.Scene {
+export class HUDScene extends Phaser.Scene {
+    private debugPadText: Phaser.GameObjects.Text;
+    private isDebugVisible: boolean;
+
     constructor () {
         super('HUD');
     }
-    
+
     preload() {
-    
+
     }
-    
+
     create() {
         const sidebar_placeholder = this.add.rectangle(
             constants.ROOM_W + constants.SIDEBAR_W/2, constants.ROOM_H/2,
             constants.SIDEBAR_W, constants.ROOM_H, 0x111111);
-    
-        this.debugPadText = this.add.text(10, 30, '', { font: '10px Courier', fill: '#ffffff' });
+
+        this.debugPadText = this.add.text(10, 30, '', { font: '10px Courier', color: '#ffffff' });
         this.debugPadText.setText('waiting for gamepad');
         this.debugPadText.setDepth(constants.Z_HUD_DEBUG);
-    
+        this.isDebugVisible = false;
+        this.debugPadText.setVisible(this.isDebugVisible);
+        this.physics.config.debug = true;
+
         inputsEventsCenter.on('debugPressed', () => {
             this.isDebugVisible = !this.isDebugVisible;
             this.debugPadText.setVisible(this.isDebugVisible);
         });
     }
-    
+
     update(time, delta) {
         this.debugPad(delta);
     }
-    
+
     debugPad(delta) {
         let debug = [];
         let pads = this.input.gamepad.gamepads;
         // let pads = this.input.gamepad.getAll();
         // let pads = navigator.getGamepads();
-    
+
         for (let i = 0; i < pads.length; i++)
         {
             let pad = pads[i];
-        
+
             if (!pad) {
                 continue;
             }
-        
+
             //  Timestamp, index. ID
             //debug.push(pad.id);
             debug.push('Index: ' + pad.index + ' Timestamp: ' + pad.timestamp);
-        
+
             //  Buttons
-        
+
             let buttons = '';
-        
+
             for (let b = 0; b < pad.buttons.length; b++)
             {
                 let button = pad.buttons[b];
-            
+
                 buttons = buttons.concat('B' + button.index + ': ' + button.value + '  ');
                 // buttons = buttons.concat('B' + b + ': ' + button.value + '  ');
-            
+
                 if (b === 8)
                 {
                     debug.push(buttons);
                     buttons = '';
                 }
             }
-        
+
             debug.push(buttons);
-        
+
             //  Axis
-        
+
             let axes = '';
-        
+
             for (let a = 0; a < pad.axes.length; a++)
             {
                 let axis = pad.axes[a];
-            
+
                 axes = axes.concat('A' + axis.index + ': ' + Math.round(axis.getValue()*100)/100 + '  ');
                 // axes = axes.concat('A' + a + ': ' + axis + '  ');
-            
+
                 if (a === 1)
                 {
                     debug.push(axes);
                     axes = '';
                 }
             }
-            
+
             const fps = Math.round(1000/delta * 100)/100;
-        
+
             debug.push(axes);
             debug.push('');
             debug.push('PX: ' + px + '; PY: ' + py);
@@ -115,7 +121,7 @@ export class GameOverScene extends Phaser.Scene {
             debug.push('FPS:' + fps);
             debug.push('PV:' + pv + '; INV_F:' + invincibilityFrames);
         }
-    
+
         this.debugPadText.setText(debug);
     }
 }

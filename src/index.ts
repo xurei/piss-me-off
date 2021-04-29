@@ -1,20 +1,20 @@
-import Phaser from 'phaser';
-import logoImg from './assets/logo.png';
+import * as Phaser from 'phaser';
 
 import { BootScene } from './scenes/boot';
 import { MainMenuScene } from './scenes/main-menu';
 import { DungeonMapScene } from './scenes/dungeon-map';
 import constants from './constants';
-import { GameOverScene, HUDScene } from './scenes/hud';
+import { HUDScene } from './scenes/hud';
 
 const game = new Phaser.Game({
     type: Phaser.WEBGL,
-    parent: 'phaser-example',
+    parent: 'piss-me-off',
+    pixelArt: true,
     physics: {
         default: 'arcade',
         arcade: {
             //gravity: { y: 300 },
-            debug: false,
+            debug: true,
         }
     },
     input: {
@@ -27,5 +27,5 @@ const game = new Phaser.Game({
         height: constants.ROOM_H,
         zoom: 3,
     },
-    scene: [ BootScene, MainMenuScene, DungeonMapScene, HUDScene, GameOverScene ],
+    scene: [ BootScene, MainMenuScene, DungeonMapScene, HUDScene ],
 });

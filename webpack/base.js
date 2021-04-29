@@ -9,12 +9,19 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.[tj]s$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "ts-loader"
+                }
+            },
+            /*{
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
                     loader: "babel-loader"
                 }
-            },
+            },*/
             {
                 test: [/\.vert$/, /\.frag$/],
                 use: "raw-loader"
@@ -24,6 +31,10 @@ module.exports = {
                 use: "file-loader"
             }
         ]
+    },
+    entry: './src/index.ts',
+    resolve: {
+        extensions: ['.ts', '.js'],
     },
     plugins: [
         new CleanWebpackPlugin({
